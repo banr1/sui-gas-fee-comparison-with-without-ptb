@@ -14,3 +14,7 @@ https://coinmarketcap.com/currencies/sui/sui/jpy/
 |Gas Fee (once) (SUI)|0.001997880 SUI| - |
 |Gas Fee (100 times) (SUI)|0.199788 SUI| ... |
 |Gas Fee (Yen) | 25.97244 Yen | ... |
+
+As to the upper limit of the PTB, the details are as follows.
+
+https://github.com/MystenLabs/sui/blob/main/crates/sui-protocol-config/src/lib.rs#L1598-L1953
