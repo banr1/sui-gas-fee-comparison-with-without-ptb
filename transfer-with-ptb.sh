@@ -8,57 +8,28 @@ log_message() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }
 
-# # Check if COIN_ID is provided as an argument
-# if [ $# -eq 0 ]; then
-#     log_message "Error: COIN_ID not provided"
-#     log_message "Usage: $0 <COIN_ID>"
-#     exit 1
-# fi
-
 # Define variables
-# COIN_ID="$1"
 BOB_ADDRESS="0x7894f6cc9b70049caa266e6230545013bacd03812a80926bce324fed63ddf92c"
 GAS_BUDGET=1000000000
+TRANSFER_COUNT=500
+TRANSFER_AMOUNT=100
 
 log_message "Starting transfer process"
-# log_message "COIN_ID: $COIN_ID"
 log_message "Recipient Address: $BOB_ADDRESS"
 log_message "Gas Budget: $GAS_BUDGET"
+log_message "Number of transfers: $TRANSFER_COUNT"
+log_message "Amount per transfer: $TRANSFER_AMOUNT"
+
+# Prepare the command
+CMD="sui client ptb --gas-budget $GAS_BUDGET --assign to_address @$BOB_ADDRESS"
+
+# Build the repeated part of the command
+for ((i=1; i<=$TRANSFER_COUNT; i++)); do
+    CMD+=" --split-coins gas \"[$TRANSFER_AMOUNT]\" --assign new_coins --transfer-objects \"[new_coins.0]\" to_address"
+done
 
 # Execute the transfer command
-sui client ptb \
-  --gas-budget $GAS_BUDGET 2>&1 \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  --split-coins gas "[100]" \
-  --assign new_coins \
-  --transfer-objects "[new_coins.0]" $BOB_ADDRESS \
-  | tee -a "$LOG_FILE"
+eval $CMD 2>&1 | tee -a "$LOG_FILE"
 
 # Check if the command was successful
 if [ $? -eq 0 ]; then
